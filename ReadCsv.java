@@ -17,7 +17,7 @@ public class ReadCsv {
 			try{
 				//convert input of fFileReader into Characters
 				br1 = new BufferedReader(new FileReader(csvFile));
-//				System.out.println("Line:"+line);
+
 				while ((line=br1.readLine()) != null && line.length()!=0)
 				{
 //					System.out.println(line);
