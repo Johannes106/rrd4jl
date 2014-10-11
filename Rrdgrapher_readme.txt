@@ -1,0 +1,8 @@
+Ausführen von Rrdgrapher.jar:
+1. Rrdgrapher starten durch einen Doppelklick auf Rrdgrapher.jar oder in der Windowskonsole muss das jeweilige (in dem sich Rrdgrapher.jar befindet) Verzeichnis gewählt werden und dann in der Konsole'java -jar Rrdgrapher.jar' eingeben.
+2. Auswählen einer Datei: Es öffnet sich ein Fenster 'Öffnen einer Datei im Verzeichnis' in welchem eine beliebige Datei aus dem Verzeichnis in dem sich alle geünschten RRD-Dateien befinden ausgewählt werden muss.
+3. Auswählen des Speicherortes: Mit einen Klick auf den Dateipfad öffnet sich wieder ein Fenster in welchem Speicherort und -name gewählt werden sollte.
+4. Auswählen der gewünschten Datenbanken: Alle verfügbaren Elemente aus dem im Schritt 2 gewählten Verzeichnis befinden sich auf der linken Seite in der entsprechenden Box. Nun sollten alle gewünschten Rrd-Daeien mittels '>>' gewählt werden. Diese sollten dann auf der rechten Seite unter 'Ausgewählte Elemente' erscheinen.
+5. Graph erzeugen: Durch ein Klick auf den Button 'Graph erzeugen' werden 4 Graphen im gewählten Verzerzeichnis erzeugt. Außerdem wird im selben Verzeichnis (wo sich Rrdgrapher.jar) befindet ein 'graph.properties' erzeugt, in dieser Propertie-Datei befinden sich alle nötigen Konfigurationangaben um den Graph bei nächsten Aufruf der 'Rrdgrapher.jar' die Graphen (falls 'permanent' nicht abgewählt wurde) automatisch zu erzeugen.
+6. Schließen der Konfigurationsoberfläche: Durch ein Klick auf das rote X wird die Konfiguration geschlossen.
+Hinweis. Um einen neuen Graph zu definieren muss die 'graph.properties'-Datei geschlossen werden
