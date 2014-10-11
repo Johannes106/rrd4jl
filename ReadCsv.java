@@ -13,14 +13,11 @@ public class ReadCsv {
 			int lines = 0; 
 			String line = "";
 			String f="";
-//			String cvsSplitBy = ",";
 			try{
 				//convert input of fFileReader into Characters
 				br1 = new BufferedReader(new FileReader(csvFile));
-
 				while ((line=br1.readLine()) != null && line.length()!=0)
 				{
-//					System.out.println(line);
 					lines= lines+1;
 				}		 
 				br1.close();
@@ -35,7 +32,6 @@ public class ReadCsv {
 		BufferedReader br1 = null;
 		String line = "text";
 		long lineCal = 0;
-//		int lineCal = 0;
 		try{
 		br1 = new BufferedReader(new FileReader(csvFile));
 		String arrLine[] = br1.readLine().split(splitter);
@@ -56,7 +52,6 @@ public class ReadCsv {
 		BufferedReader br1 = null;
 		String line = "text";
 		long lineCal = 0;
-//		int lineCal = 0;
 		try{
 		br1 = new BufferedReader(new FileReader(csvFile));
 
