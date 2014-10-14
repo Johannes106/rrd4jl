@@ -7,8 +7,13 @@ import java.util.Vector;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-//import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * Cdialog builds the different dialogs which are used in Rrdtoolgui and DualListBox1 to open or save files
+ * @author j.launer
+ *
+ */
 public class Cdialog {
 	// Variable, um in der Gui den Text anzuzeigen
 	protected String statusMessage = "Statusmeldung";
@@ -45,12 +50,17 @@ public class Cdialog {
 		this.vPath = vPath;
 	}
 
-		protected String openDia() {
+	/** 
+	 * Generate a window to open a file
+	 * @return
+	 */
+		protected String openDia(String fileTyp) {
 			JFileChooser fc = new JFileChooser();
-//			File defaultLocation = new File("C:/rrd");
+//			
 			File defaultLocation = new File("//EMGPERFMESS01/Messdaten");
-//			fc.setFileFilter(new FileNameExtensionFilter("csv", "csv"));  // Dieser Filter ist nur in jre1.7 vorhanden
-			fc.setDialogTitle("Öffnen einer Datei");
+			// Filefilter(extension, nameToDisplay)
+			fc.setFileFilter(new FileNameExtensionFilter(fileTyp, fileTyp));  // Dieser Filter ist nur in jre1.7 vorhanden
+			fc.setDialogTitle("Öffnen einer " + fileTyp + "-Datei");
 			fc.setToolTipText("Öffnen einer Datei, dessen Inhalt durch ein Komma getrennt ist.");
 			if(defaultLocation.exists()==true)
 			{
@@ -71,15 +81,17 @@ public class Cdialog {
 			
 			return file.getAbsolutePath();
 		}
-
-		protected String openFolderDia() {
-			
+		/**
+		 * It lists all files in the choosen Folder (of a file)
+		 */
+		protected String openFolderDia(String fileTyp) {
 			JFileChooser fc = new JFileChooser();
 //			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 //			File defaultLocation = new File("C:/rrd/e");
-			File defaultLocation = new File("//EMGPERFMESS01/Messdaten");
-//			fc.setFileFilter(new FileNameExtensionFilter("csv", "csv"));  // Dieser Filter ist nur in jre1.7
-			fc.setDialogTitle("Öffnen einer Datei im Verzeichnis");
+			File defaultLocation = new File("//EMGPERFMESS01/Messdaten/rrd");
+			fc.setFileFilter(new FileNameExtensionFilter(fileTyp, fileTyp)); 
+			fc.setDialogTitle("Öffnen einer " + fileTyp + "Datei im Verzeichnis um alle " + fileTyp +"-Dateien darin zu öffnen."
+					+ "");
 			fc.setToolTipText("Öffnen einer Datei im entsprechenden Ordner. Es werden Dateien mit der Endung .rrd erwartet");
 			if(defaultLocation.exists()==true)
 			{
@@ -102,6 +114,11 @@ public class Cdialog {
 			return file.getPath();
 		}
 		
+		/** 
+		 * it lists all files of the typ rrd of the chosen folder
+		 * @param path
+		 * @return
+		 */
 			public String[] listFileRrd(String path){
 				String files;
 				int j=0;
@@ -146,7 +163,12 @@ public class Cdialog {
 			  }
 			  return arrFiles;
 			}
-		
+		/**
+		 * it builds a opendialog and give back a string of the targetfile
+		 * @param String description
+		 * @param String extension
+		 * @return String pathOfFile
+		 */
 		protected String saveDia(String description, String extension) {
 			JFrame parentFrame = new JFrame();
 

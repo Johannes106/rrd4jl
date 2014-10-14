@@ -1,25 +1,18 @@
 package org.rrd4j.jl;
 
-/**
- * Funktioniert soweit gut. es muss eine gleichnamige csvdatei mit immer neuen werten mit passenden timestamps eingelesen werden.
- * TODO:
- * -Fehler abfangen und entsprechende Meldungen bringen
- * -refresh-button gleich im go-button einbinden
- * -tooltips bringen
- * -filechooser einbauen
- */
-
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
 import java.awt.GridLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
+
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Color;
@@ -31,13 +24,18 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 
-
-
-
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.lang.reflect.Array;
 import java.awt.SystemColor;
 
+/**
+ * this class builds the gui for define and update a rrd-file or if a rrd-file is already built it only makes an update of the rrd.
+ * @author j.launer
+ * @param CsvFile (ReadCsv.java)
+ * @return rrdFile (JmSave.java)
+ */
 public class Rrdtoolgui {
 //  TextFields
 	private JFrame frame;
@@ -49,7 +47,9 @@ public class Rrdtoolgui {
 	private JTextField txtEnd;
 //	objects of classes
 	Prop pro = new Prop();
-	Logging l = new Logging();
+	Logging log = new Logging();
+	Logging logInfo = new Logging();
+	Logging logError = new Logging();
 	 
 	/**
 	 * Create the application.
@@ -215,7 +215,7 @@ public class Rrdtoolgui {
 		txtArStep = new JTextField();
 		txtArStep.setToolTipText("Aus wieviel Daten soll der Durchschnitt gebildet werden?");
 		txtArStep.setBackground(SystemColor.inactiveCaption);
-		txtArStep.setText("1,2880");
+		txtArStep.setText("1,96,35040");
 		panel_7.add(txtArStep);
 		txtArStep.setColumns(10);
 		
@@ -223,14 +223,14 @@ public class Rrdtoolgui {
 		txtArRow.setToolTipText("Wieoft soll der Durchschnitt gebildet werden?");
 		txtArRow.setBackground(SystemColor.inactiveCaption);
 		//fuer 1Monat: 15min in 1 Stunde= 4 4*24Stunden=96mal 96malproTag*30Tage =2880malproMonat 2880*12Monate=34560Jahr
-		txtArRow.setText("2880,34560");
+		txtArRow.setText("96,7,10");
 		panel_7.add(txtArRow);
 		txtArRow.setColumns(10);
 		
 		txtRrdFile = new JTextField();
 		panel_1.add(txtRrdFile);
 		txtRrdFile.setToolTipText("Pfadangabe f\u00FCr .rrd");
-		txtRrdFile.setText("//EMGPERFMESS01/Messdaten/rrd"/*"/home/johannes/Sonstiges/Programmieren/java/WorkspaceJo/rrd4j/e/eclipsehome.rrd"*/);
+		txtRrdFile.setText("//EMGPERFMESS01/Messdaten/rrd");
 		txtRrdFile.addMouseListener(new java.awt.event.MouseAdapter() {
 		        @Override
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -255,16 +255,22 @@ public class Rrdtoolgui {
 		txtCsvFile.setToolTipText("Wo befindet sich die Import-Datei (muss csv-Format sein)");
 		txtCsvFile.setForeground(Color.GRAY);
 //		txtCsvFile.setText("C:/rrd/e/s80_1.csv");
-		txtCsvFile.setText("//EMGPERFMESS01/Messdaten/csv");
+//		txtCsvFile.setText("//EMGPERFMESS01/Messdaten/csv");
 //		jm0.setPathCSV(txtCsvFile.getText());
 		txtCsvFile.addMouseListener(new java.awt.event.MouseAdapter() {
 	        @Override
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 	            Cdialog c = new Cdialog();
 	            String s;
-	            s = c.openDia();//("Datenbank", ".rrd");
+	            s = c.openDia("csv");//("Datenbank", ".rrd");
 	            txtCsvFile.setText(s);
 	            jm0.setPathCSV(txtCsvFile.getText());
+	            System.out.println("s:"+s);
+//	            String[] splittedFilePath = s.split("\\");
+//	            System.out.println(splittedFilePath[0]);
+//	            int partsOfSplit = 0;
+//	            		partsOfSplit=Array.getLength(splittedFilePath);
+//	            System.out.println("Der Pfad wurde in " + partsOfSplit + "aufgeteilt");
 	        }
 	    });
 		//If propertie exist use text of it else take standarttext
@@ -426,7 +432,7 @@ public class Rrdtoolgui {
 	 * cug generate and define the database, update the csv into the database and generate a graph
 	 */
 	protected void cug(){
-		l.logFile("rrd4j.error.log");
+		log.logFile("rrd4j.error.log");
 		try {
 			//Define RRD jm.createRrd("C:/rrd/e/jmsave.rrd", "time", 900, 1800, 1396338817L, 0, 1500, "1,96", "3600,3000");
 			jm0.createRrd(jm0.getPathFile(), jm0.getDbName(), jm0.getStepReal(), jm0.getStep(), jm0.getsTime(), jm0.getMin(), jm0.getMax(), jm0.getArStep(), jm0.getArRow());
@@ -436,15 +442,15 @@ public class Rrdtoolgui {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("ERROR: Kann RRD (in Define-part) nicht definieren!");
-			l.logger.warning("Fehler: Kann RRD nicht definieren!");
-			l.logger.warning(" txtRrdFile:" + jm0.getPathFile() + " | startTime:"+jm0.getsTime()+" | txtDbName:" + jm0.getDbName()+" | txtStep:" + jm0.getStep()+" | txtMin:"+jm0.getMin()+" | txtMax:"+jm0.getMax());
+			log.logger.warning("Fehler: Kann RRD nicht definieren!");
+			log.logger.warning(" txtRrdFile:" + jm0.getPathFile() + " | startTime:"+jm0.getsTime()+" | txtDbName:" + jm0.getDbName()+" | txtStep:" + jm0.getStep()+" | txtMin:"+jm0.getMin()+" | txtMax:"+jm0.getMax());
 		}
 		try {
-			jm0.updateRrd(txtRrdFile.getText(), txtCsvFile.getText(), txtSplitter.getText(), jm0.getsTime(), jm0.geteTime());
+			jm0.updateRrd(txtRrdFile.getText(), txtCsvFile.getText(), txtSplitter.getText(), jm0.getsTime(), jm0.geteTime(), log);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("ERROR: Kann DB (in update-Part) nicht updaten!" + txtRrdFile.getText()+"|startTime: "+jm0.getsTime()+"|txtDbName: " + txtDbName.getText()+"|txtStep"+jm0.getStep()+"|txtMin: "+jm0.getMin()+"|txtMax: "+jm0.getMax());
-			l.logger.warning("Fehler: Kann DB nicht updaten! ");
+			log.logger.warning("Fehler: Kann DB nicht updaten! ");
 			System.out.println("txtRrdFile: " + txtRrdFile.getText()+"|startTime: "+jm0.getsTime()+"|txtDbName: " + txtDbName.getText()+"|txtStep"+jm0.getStep()+"|txtMin: "+jm0.getMin()+"|txtMax: "+jm0.getMax());
 		}
 //		try {
@@ -462,8 +468,15 @@ public class Rrdtoolgui {
 	 * update the csv into the database and generate a graph
 	 */
 	protected void ug(){
-		l.logFile("rrd4j.error.log");
+		// necessary for logging
+//		log.logFile("rrd4j.log");
 		
+		File fileCsv = new File(pro.readP(pro.readBase(), "Csvpfad"));
+		if(fileCsv.exists()==false)	
+		{
+			System.out.println("CSV nicht existieren");
+			log.logger.warning("CSV-Datei existiert nicht");
+		}
 		try {
 			// Read heartbeat of Properties-File and parse it into int for using in longFirstTime()
 			System.out.println("rrdtool update ");
@@ -471,31 +484,22 @@ public class Rrdtoolgui {
 			int intHb = Integer.parseInt(stringHb);
 			String stringStartTime = pro.readP(pro.readBase(), "Startzeit");
 			int intStartTime = Integer.parseInt(stringStartTime);
+//			File fileCsv = new File(pro.readP(pro.readBase(), "Csvpfad"));
+			
 			long longEndTime = c.longLastTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb);
 			System.out.println("Startzeit:" + pro.readP(pro.readBase(), "Startzeit"));
 			System.out.println("Endzeit:" + longEndTime);
-			jm0.updateRrd(pro.readP(pro.readBase(), "RRDpfad"), pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intStartTime, longEndTime);					
+			jm0.updateRrd(pro.readP(pro.readBase(), "RRDpfad"), pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intStartTime, longEndTime, log);					
 //			jm0.createGraph(pro.readP(pro.readBase(), "RRDpfad"), pro.readP(pro.readBase(), "Datenbankname"), pro.readP(pro.readBase(), "Graphpfad"), c.longFirstTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb), c.longLastTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb));
 
-	} catch (Exception e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 			System.out.println("ERROR: Kann DB nicht updaten! vorletztes try");
-			l.logger.warning("Fehler: Kann DB nicht updaten!");
-			l.logger.info("Moegliche Fehler: Der timestamp in der Quelldatei paﬂt nicht oder die Quelldatei ist nicht im richtigen Format");
+			log.logger.warning("Fehler: Kann DB nicht updaten!");
+			log.logger.info("Moegliche Fehler: Der timestamp in der Quelldatei paﬂt nicht oder die Quelldatei ist nicht im richtigen Format");
 		}
-//		try {
-//			String stringHb = pro.readP(pro.readBase(), "Updatefrequenz");
-//			int intHb = Integer.parseInt(stringHb);
-////			jm0.createGraph(pathFile, dbName, pathGraphFile, startTime, endTime);
-//			String stringStartTime = pro.readP(pro.readBase(), "Startzeit");
-//			int intStartTime = Integer.parseInt(stringStartTime);
-//			jm0.createGraph(pro.readP(pro.readBase(), "RRDpfad"), pro.readP(pro.readBase(), "Datenbankname"), pro.readP(pro.readBase(), "Graphpfad"), intStartTime, c.longLastTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb));
-////			jm0.updateRrd(pro.readP(pro.readBase(), "RRDpfad"), pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), c.longFirstTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb), c.longLastTime(pro.readP(pro.readBase(), "Csvpfad"), pro.readP(pro.readBase(), "Trennzeichen"), intHb));
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//			System.err.println("ERROR: Kann Grafik nicht erstellen!");
-//			l.logger.warning("Fehler: Kann Grafik nicht erstellen!");
-//		}
+		
+		fileCsv.delete();
 	}
 
 	protected void createGui()
@@ -505,8 +509,22 @@ public class Rrdtoolgui {
 				Cdialog cd = new Cdialog();
 				try {
 					Rrdtoolgui window = new Rrdtoolgui();
+					String filePathCsv = "";
 					window.frame.setTitle("RRD Manager");
-					window.txtCsvFile.setText(cd.openDia());
+					filePathCsv = cd.openDia("csv");
+					window.txtCsvFile.setText(filePathCsv);
+
+					// build rrdPath with aid of CsvPath - cut, cut, merge = doing handicraft work 
+					System.out.println("filePathCsv:"+filePathCsv);
+					String filePathWithoutNameCsv = filePathCsv.substring(0, filePathCsv.lastIndexOf("\\"));
+					System.out.println("filename:"+filePathWithoutNameCsv);
+					String filePathWihtoutPathAndName = filePathWithoutNameCsv.substring(0, filePathWithoutNameCsv.lastIndexOf("\\"));
+					System.out.println("file Without all:" + filePathWihtoutPathAndName);
+					String lastPathAndName = filePathWithoutNameCsv.substring(filePathWithoutNameCsv.lastIndexOf("\\"), filePathWithoutNameCsv.length())  + filePathCsv.substring(filePathCsv.lastIndexOf("\\"), filePathCsv.lastIndexOf(".")) + ".rrd";
+					System.out.println("Needed Part of Path:" + lastPathAndName);
+					window.txtRrdFile.setText("\\\\MGPERFMESS01\\Messdaten\\rrd" + lastPathAndName);
+					
+					
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -536,59 +554,28 @@ public class Rrdtoolgui {
 		File fLog = new File("rrd4j.log");
 		File fErr = new File("rrd4j.error.log");
 //		File fLog = new File("rrd4j_Config.log");
-		Logging l = new Logging();
 		Cdialog cDia = new Cdialog();
-//		l.logFile();
 		//If propertie exist don't start gui 
 		if (f2.exists() == true)
 		{
 			// Update
-			System.out.println("Prop already exist!!!!!!!!!!!!!!");
-			if (fLog.exists() == true)
-			{
-				fLog.delete();
-				System.out.println("fLog deleted");
-			}
-			if(fErr.exists() == true)
-			{
-				fErr.delete();
-				System.out.println("fErr deleted");
-			}
-			l.logFile("rrd4j.log");
-			l.logger.info("Die Kofiguration fuer ein Projekt existiert bereits. Um die grafische Oberflaeche zu starten, muessen Sie die 'rrd.properties'-Datei im Quellverzeichnis loeschen");
+			rGui.logInfo.logFile("rrd4j.log");
+			rGui.logInfo.logger.info("Die Kofiguration fuer ein Projekt existiert bereits. Um die grafische Oberflaeche zu starten, muessen Sie die 'rrd.properties'-Datei im Quellverzeichnis loeschen");
+//			rGui.log.logFile("rrd4j.error.log");
 			rGui.ug();
-			l.logger.info(rGui.jm0.getStatementU());
-			l.logger.info(rGui.jm0.getStatementG());
-//			l.logger.info(msg);
-//			if (l.checkForEmpty("rrd4j.error.log") == true)
-//			{
-//				System.out.println("keine Fehler vorhanden");
-			File f = new File(p.readP(p.readBase(), "Csvpfad"));
-			f.delete();
-//			}
-//			else
-//			{
-//				System.out.println("Fehler vorhanden");
-//			}
 		}
 		else
 		{
-//			rGui.txtCsvFile.setText("//EMGPERFMESS01/Messdaten/csv");
-			// Update
+			// Start GUI
 						if (fLog.exists() == true)
 						{
 							fLog.delete();
 							System.out.println("Delete fLog");
 						}
-						if(fErr.exists() == true)
-						{
-							fErr.delete();
-							System.out.println("Delete fErr");
-						}
 			rGui.createGui();
-			l.logFile("rrd4j.log");
-			l.logger.info("Neue Konfiguration fuer neue Datenbank wurde angelegt und geupdated, falls das Programm nicht geschlossen wurde. ");
-			l.logger.info("rrdtool create " + rGui.jm0.getStatementC());
+			rGui.logInfo.logFile("rrd4j.log");
+			rGui.logInfo.logger.info("Neue Konfiguration fuer neue Datenbank wurde angelegt und geupdated, falls das Programm nicht geschlossen wurde. ");
+			rGui.logInfo.logger.info("rrdtool create " + rGui.jm0.getStatementC());
 //			if (l.checkForEmpty("rrd4j.error.log") == true)
 //			{
 //				System.out.println("Fehler vorhanden");
@@ -599,9 +586,6 @@ public class Rrdtoolgui {
 //			{
 //				System.out.println("Keine Fehler");
 //			}
-			
 		}
-//		File f = new File(p.readP(p.readBase(), "Csvpfad"));
-//		f.delete();
 	}
 }

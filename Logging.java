@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
+/**
+ * It's responsible for all log actions. The logfiles help the user to solve problem.  
+ * @author j.launer
+ *
+ */
 public class Logging {
 	  private static final Logger log = Logger.getLogger( Logging.class.getName() );
 
@@ -15,6 +19,7 @@ public class Logging {
 	    
 	    /**
 	     * logFile generates a File that is the base for logging
+	     * @param String logPath
 	     */
 	    protected void logFile(String logPath)
 	    {
@@ -25,14 +30,20 @@ public class Logging {
 		        SimpleFormatter formatter = new SimpleFormatter();  
 		        fh.setFormatter(formatter);  
 		        // the following statement is used to log any messages  
-//		        logger.info();  
+//		        logger.info();
+//		        fh.close();
 		    } catch (SecurityException e) {  
 		        e.printStackTrace();  
 		    } catch (IOException e) {  
 		        e.printStackTrace();  
 		    }  
 	    }
-
+	    /**
+	     * Check if the logfile is empty
+	     * @param String fileName
+	     * @return boolean 
+	     * @throws IOException
+	     */
 	    protected boolean checkForEmpty(String fileName) throws IOException
 	    {
 	    	FileInputStream fis = new FileInputStream(new File(fileName));  
@@ -43,14 +54,16 @@ public class Logging {
 	    	  System.out.println(fileName + " is empty!!");
 	    	  check = true;
 	    	}  
+	    	fis.close();
 	    	return check;
 	    }
 	    
 //	  public static void main(String[] args) throws IOException {  
 //		  Logging l = new Logging();
-//		  l.logFile("C:/rrd/e/l.log");
-////		  l.logger.info("Tschüss");
-////		  l.logger.warning("Hilfe");
-//		  System.out.println(l.checkForEmpty("C:/rrd/e/l.log"));
+//		  l.logFile("C:/rrd/log/test.log");
+//		  l.logger.info("Tschüss");
+//		  l.logger.warning("Hilfe");
+//		  l.logger.warning("Hilfe2");
+////		  System.out.println(l.checkForEmpty("C:/rrd/e/l.log"));
 //		    }
 }

@@ -62,15 +62,15 @@ public class DualListBox1 extends JPanel {
 	protected SortedListModel destListModel;
 	Vector<String> pathFilesVector = new Vector<String>();
 
-	// For gui (open-, close-window)
+	// Object for gui (open-, close-window)
 	Cdialog c = new Cdialog();
-	// for functionality
+	// Object for functionality
 	JmSave jm = new JmSave();
 
 	Prop pro = new Prop();
-	// for calculation with date
+	// static object for calculation with date
 	static DateCalc dateCalc = new DateCalc();
-	// for logging of errors
+	// static object for logging of errors
 	static Logging lo = new Logging();
 
 	private JButton addButton;
@@ -125,22 +125,35 @@ public class DualListBox1 extends JPanel {
 		this.stringEndzeit = stringEndzeit;
 	}
 
+	//Constructor
 	public DualListBox1() {
 		initScreen();
 	}
 
+	/**
+	 * delete all elements of source 
+	 */
 	public void clearSourceListModel() {
 		sourceListModel.clear();
 	}
-
+	/**
+	 * delete all elements of destination
+	 */
 	public void clearDestinationListModel() {
 		destListModel.clear();
 	}
-
+	/**
+	 * add elements of a list to source
+	 * @param String newValue
+	 */
 	public void addSourceElements(ListModel<String> newValue) {
 		fillListModel(sourceListModel, newValue);
 	}
-
+	/**
+	 * works in addSourceElements
+	 * @param model
+	 * @param newValues
+	 */
 	private void fillListModel(SortedListModel model,
 			ListModel<String> newValues) {
 		int size = newValues.getSize();
@@ -148,13 +161,19 @@ public class DualListBox1 extends JPanel {
 			model.add(newValues.getElementAt(i));
 		}
 	}
-
+	/**
+	 * it add an array of objects to source
+	 */
 	public void addSourceElements() {
-		Object newValue[] = c.listFileRrd(c.openFolderDia());
+		Object newValue[] = c.listFileRrd(c.openFolderDia("rrd"));
 		fillListModel(sourceListModel, newValue);
 
 	}
-
+	/**
+	 * it add source elements to destination elements
+	 * @param newValue
+	 * @throws Exception
+	 */
 	public void addDestinationElements(Object newValue[]) throws Exception {
 		fillListModel(destListModel, newValue);
 		// to pull starttime into fields
@@ -166,7 +185,9 @@ public class DualListBox1 extends JPanel {
 		model.addAll(newValues);
 	}
 
-	// Print all values of sourcelistmodel
+	/** 
+	 * Print all values of sourcelistmodel
+	 */
 	@SuppressWarnings("unused")
 	private void printListSourceModel() {
 		// Output of Source Elements
@@ -184,7 +205,7 @@ public class DualListBox1 extends JPanel {
 	/**
 	 * printListDestinationModel returns all whole paths of the selected Files
 	 * 
-	 * @param countArray
+	 * @param int countArray
 	 * @return String
 	 */
 	protected String printListDestinationModel(int countArray) {
@@ -200,7 +221,9 @@ public class DualListBox1 extends JPanel {
 		}
 		return wholePaths[countArray];
 	}
-
+	/**
+	 * remove the selected elements of sourcelist
+	 */
 	private void clearSourceSelected() {
 		@SuppressWarnings("deprecation")
 		Object selected[] = sourceList.getSelectedValues();
@@ -209,7 +232,9 @@ public class DualListBox1 extends JPanel {
 		}
 		sourceList.getSelectionModel().clearSelection();
 	}
-
+	/**
+	 * remove the selected elements of sourcelist
+	 */
 	private void clearDestinationSelected() {
 		@SuppressWarnings("deprecation")
 		Object selected[] = destList.getSelectedValues();
@@ -263,13 +288,13 @@ public class DualListBox1 extends JPanel {
 		// Save each value of destListModel in one String (filePath
 		for (int i = 0; i < destListModel.getSize(); i++) {
 			filePath = printListDestinationModel(i);
-			System.out.println("filePath:" + i + " " + filePath);
-			System.out.println("getStringStartzeit:" + i + " "
-					+ getStringStartzeit());
-			System.out.println("getStringEndzeit:" + i + " "
-					+ getStringEndzeit());
-			System.out
-					.println("---------------------------------------------------");
+//			System.out.println("filePath:" + i + " " + filePath);
+//			System.out.println("getStringStartzeit:" + i + " "
+//					+ getStringStartzeit());
+//			System.out.println("getStringEndzeit:" + i + " "
+//					+ getStringEndzeit());
+//			System.out
+//					.println("---------------------------------------------------");
 			try {
 				// set Long(Start/End)Time
 				jm.getFileTimes(filePath);
@@ -283,7 +308,6 @@ public class DualListBox1 extends JPanel {
 				System.err.println("Diese Datei ist keine RRD4J");
 				txtStatus.setText("Keine rrd4J Datei");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.err
 						.println("Fehler beim Ermitteln der gesuchten Zeiten");
@@ -311,11 +335,7 @@ public class DualListBox1 extends JPanel {
 		// Var for times in txtfields
 		long userStartTime = 0L;
 		long userEndTime = 0L;
-		// check if value is in correct format
-		// if(txtStartzeit.getText().equals("([0-9]{2})-([0-9]{2})-([0-9]{4})\\s([0-2][0-9]):([0-5][0-9])")
-		// &&
-		// txtEndzeit.getText().equals("([0-9]{2})-([0-9]{2})-([0-9]{4})\\s([0-2][0-9]):([0-5][0-9])")){
-		// Convert start and endtime to long
+
 		firstStartTime = jm.getLongStartTime();
 		firstEndTime = jm.getLongEndTime();
 		// Get time of txtfields and convert it into long
@@ -334,11 +354,8 @@ public class DualListBox1 extends JPanel {
 			} else {
 				System.out
 						.println("userstartTime liegt im g¸ltigen Zeitraum (compareTimeOf)");
-				// txtStatus.setForeground(Color.gray);
-				// txtStatus.setText("Zeiten ok");
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.err.println("Fehler beim Vergleichen (compareTimeOf)");
 		}
@@ -352,6 +369,7 @@ public class DualListBox1 extends JPanel {
 		setLayout(new GridLayout(0, 3));
 		sourceListModel = new SortedListModel();
 		removeButton = new JButton("X");
+		removeButton.setToolTipText("Element von der Auswahl entfernen");
 		removeButton.addActionListener((new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected[] = destList.getSelectedValues();
@@ -362,23 +380,27 @@ public class DualListBox1 extends JPanel {
 
 		destListModel = new SortedListModel();
 		destList = new JList(destListModel);
+		destList.setToolTipText("Diese RRD werden in dem Grafik angezeigt");
 
 		JPanel rightPanel = new JPanel(new BorderLayout());
 
-		rightPanel.add(new JLabel("Ausgew\u00E4hlte Elemente:"),
+		JLabel label_1 = new JLabel("Ausgew\u00E4hlte Elemente:");
+		label_1.setToolTipText("Round Robin Database");
+		rightPanel.add(label_1,
 				BorderLayout.NORTH);
 		rightPanel.add(new JScrollPane(destList), BorderLayout.CENTER);
 		rightPanel.add(removeButton, BorderLayout.SOUTH);
 		sourceList = new JList(sourceListModel);
+		sourceList.setToolTipText("Diese RRD sind im Verzeichnis enthaltene RRD-Dateien");
 
 		addButton = new JButton(">>");
+		addButton.setToolTipText("Element ausw\u00E4hlen");
 		addButton.addActionListener((new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected[] = sourceList.getSelectedValues();
 				try {
 					addDestinationElements(selected);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				clearSourceSelected();
@@ -386,12 +408,12 @@ public class DualListBox1 extends JPanel {
 		}));
 
 		JPanel leftPanel = new JPanel(new BorderLayout());
-		leftPanel.add(new JLabel("Verf\u00FCgbare Elemente:"),
+		JLabel label = new JLabel("Verf\u00FCgbare Elemente:");
+		label.setToolTipText("Round Robin Database");
+		leftPanel.add(label,
 				BorderLayout.NORTH);
 		leftPanel.add(new JScrollPane(sourceList), BorderLayout.CENTER);
-		// System.out.println(sourceList);
 		leftPanel.add(addButton, BorderLayout.SOUTH);
-		// System.out.println(leftPanel);
 
 		add(leftPanel);
 
@@ -403,7 +425,7 @@ public class DualListBox1 extends JPanel {
 		centerPanelTop.setLayout(new GridLayout(5, 1, 0, 0));
 
 		btnVerzeichnisWhlen = new JButton("Quellverzeichnis w\u00E4hlen");
-		btnVerzeichnisWhlen.setToolTipText("RRD Folder");
+		btnVerzeichnisWhlen.setToolTipText("RRD Verzeichnis");
 		btnVerzeichnisWhlen.addActionListener((new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFiles();
@@ -449,11 +471,7 @@ public class DualListBox1 extends JPanel {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					System.out.println("Fehler bei create");
-					// txtStatus.setForeground(Color.RED);
-					// txtStatus.setText("Fehler beim Erzeugen");
 				}
-				// System.out.println("btnGr: " + c.getOPath());
-				// System.out.println("Size" + destList.getSelectionModel());
 			}
 		}));
 		centerPanelTop.add(btnGraphErzeugen);
@@ -472,18 +490,12 @@ public class DualListBox1 extends JPanel {
 		centerPanelTop.add(txtEndzeit);
 		txtEndzeit.setText("Endzeit");
 		txtEndzeit.setColumns(10);
-		// btnGraphErzeugen.addActionListener((new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		//
-		// }
-		// }));
 		centerPanelBottom = new JPanel();
 		centerPanel.add(centerPanelBottom);
 		centerPanelBottom.setLayout(new GridLayout(3, 1, 1, 1));
 
 		txtStatus = new JTextField();
 		txtStatus.setToolTipText("Info");
-		// Cdialog cd = new Cdialog();
 		txtStatus.setText(c.getStatusMessage());
 		txtStatus.setEditable(false);
 		txtStatus.setForeground(Color.GRAY);
@@ -513,16 +525,13 @@ public class DualListBox1 extends JPanel {
 		centerPanel.add(rdbtnPermanent);
 
 		btnNeuenGraph_1 = new JButton("neuen Graph");
-		btnNeuenGraph_1.setToolTipText("neue Properties erstellen");
+		btnNeuenGraph_1.setToolTipText("neue Grafik und Propertie erstellen");
 		btnNeuenGraph_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setGraphPath(txtZielverzeichnis.getText());
-				// txtStartzeit.setText(t);
 				c.setStatusMessage("zus‰tzlich Graph erzeugt");
 				txtStartzeit.setForeground(Color.GRAY);
-				// String s = txtStartzeit.getText();
 				txtStatus.setText(c.getStatusMessage());
-				// setStartZeit
 				setStringStartzeit(txtStartzeit.getText());
 				setStringEndzeit(txtEndzeit.getText());
 
@@ -534,46 +543,18 @@ public class DualListBox1 extends JPanel {
 					System.out.println("writeIntoProp does not work");
 					e.printStackTrace();
 				}
-				// clearFieldsForNew();
 			}
 		});
 		centerPanel.add(btnNeuenGraph_1);
-
-		// combobox for new values
-		// comboBox_1 = new JComboBox();
-		// if(comboBox_1.getItemCount()==0)
-		// comboBox_1.addItem(counter);
-		//
-		// btnNeuenGraph = new JButton("neuen Graph");
-		// btnNeuenGraph.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// counter++;
-		// ArrayList<Integer> scripts = new ArrayList<Integer>();
-		// System.out.println("Graph "+counter);
-		// comboBox_1.addItem(counter);
-		// scripts.add(counter);
-		// try {
-		// writeIntoPropAndCreate();
-		// } catch (Exception e1) {
-		// System.out.println("Fehler bei writeIntoP");
-		// e1.printStackTrace();
-		// }
-		// clearFieldsForNew();
-		//
-		// }
-		// });
-		// centerPanel.add(btnNeuenGraph);
-		// centerPanel.add(comboBox_1);
-
 		add(rightPanel);
 
 	}
 
-	protected void clearFieldsForNew() {
-		txtEndzeit.setText("");
-		txtStartzeit.setText("");
-		txtZielverzeichnis.setText("");
-	}
+//	protected void clearFieldsForNew() {
+//		txtEndzeit.setText("");
+//		txtStartzeit.setText("");
+//		txtZielverzeichnis.setText("");
+//	}
 
 	/**
 	 * writeIntoProp write values of GUI into properties-file and generate a
@@ -582,10 +563,6 @@ public class DualListBox1 extends JPanel {
 	 * @throws Exception
 	 */
 	protected void writeIntoPropAndCreate() throws Exception {
-		/*
-		 * TOdo: 1. check if file exist done 2. save endtime from archive into
-		 * long done 3. save values from properties into other variables done
-		 */
 		// for radiobutton
 		boolean checkPermanent = rdbtnPermanent.isSelected();
 		String checkPer = "";// String.valueOf(checkPermanent);
@@ -600,8 +577,7 @@ public class DualListBox1 extends JPanel {
 				new LinkedHashSet<String>(pathFilesVector));
 		jm.vectorOutput(uniqueVectorBc);
 		pathFilesVector.clear();
-		// create Base Propertie
-		// pro.createBaseGraph(getGraphPath()+".properties");
+
 		if(getGraphPath()!="C:/rrd/graph.png")
 		{
 		pro.createBaseGraph(getGraphPath() + ".properties");
@@ -617,19 +593,10 @@ public class DualListBox1 extends JPanel {
 					txtStartzeit.getText(), getStringEndzeit(), checkPer);			
 		}
 		String strStartTime = txtStartzeit.getText();
-//		long lonStartTime = dateCalc.convertToTimestamp(strStartTime);
 		long lonStartTime = jm.getLongEndTime();
 		long lonEndTime = jm.getLongEndTime();
-//		System.out.println("lonStart:" + lonStartTime);
-//		System.out.println("lonEnd:" + lonEndTime);
 		jm.createGraphes(uniqueVectorBc, "time", getGraphPath(), lonStartTime,
 				lonEndTime);
-		// clearFieldsForNew();
-		// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-		// als naechstes muﬂ ich mit der Klasse Prop.java arbeiten um die Werte
-		// der Variablen zu speichern und anschlieﬂend automatisiert aufzurufen.
-		// Da muss ich dann wieder mit einer if-Abfrage arbeiten.
-		// jm.createGraph(pathFile, dbName, pathGraphFile, startTime, endTime);
 	}
 	
 	/**
@@ -639,13 +606,6 @@ public class DualListBox1 extends JPanel {
 	 * @throws Exception
 	 */
 	protected void boxCreateGraph() throws Exception {
-		/*
-		 * Todo: 1. get pathFiles in a vector 2. remove duplicates in
-		 * pathFilesVector 3. save values of TextField startTime, endtime,
-		 * graphpath, and Datenbankname into properties Vector<String> pathFile,
-		 * String dbName, String pathGraph, String sTime, String eTime, String
-		 * permanent 4. execute createGraphes
-		 */
 		System.out.println("Create Graph");
 		// Var for Date-format
 		String dateFormat = "\\d\\d-\\d\\d-\\d\\d\\d\\d \\d\\d:\\d\\d";
@@ -653,7 +613,6 @@ public class DualListBox1 extends JPanel {
 			System.out.println("Keine Datei gew‰hlt!");
 			txtStatus.setForeground(Color.RED);
 			txtStatus.setText("Keine Datei gew‰hlt!");
-			// txtStatus.setForeground(Color.BLACK);
 		}
 		// get values of textfields
 		String startTime = txtStartzeit.getText();
@@ -680,13 +639,10 @@ public class DualListBox1 extends JPanel {
 				System.out.println("No time");
 				getTimeOf();
 				txtStatus.setForeground(Color.red);
-//				txtStatus.setText("Start- und Endzeit fehlt");
 				txtStartzeit.setForeground(Color.GRAY);
 				txtStartzeit.setText(jm.getStartTime());
-				// txtStartzeit.setForeground(Color.BLACK);
 				txtEndzeit.setForeground(Color.GRAY);
 				txtEndzeit.setText(jm.getEndTime());
-				// txtEndzeit.setForeground(Color.BLACK);
 			} else if (txtStartzeit.getText().equals("Startzeit")) {
 				getTimeOf();
 				System.out.println("No time");
@@ -731,9 +687,6 @@ public class DualListBox1 extends JPanel {
 			System.out.println("jm.getLongStartTime:" + jm.getLongStartTime());
 			System.out.println("jm.getLongEndTime  :" + jm.getLongEndTime());
 
-			// jm.createGraphesGraph(filePath, txtStartzeit.getText(),
-			// txtEndzeit.getText());
-
 			System.out
 					.println("boxCreateGraph------------------------------------------------------------------------------");
 		}
@@ -756,7 +709,10 @@ public class DualListBox1 extends JPanel {
 		frame.setSize(600, 300);
 		frame.setVisible(true);
 	}
-
+	/**
+	 * generates the graph without gui
+	 * @throws Exception
+	 */
 	protected void updateAidOfProp() throws Exception {
 		// Check how many pathes exist
 		int pathCount = 0;
@@ -787,8 +743,6 @@ public class DualListBox1 extends JPanel {
 						pro.readBaseGraph(), "RRDpfad");
 				Vector<String> uniqueVectorRrd = new Vector<String>(
 						new LinkedHashSet<String>(rrdPath));
-				// jm.vectorOutput(pro.readAndAddGraphP("graph.properties",
-				// "RRDpfad"));
 				// get EndTime
 				System.out.println("MinTime:"
 						+ jm.getFileEndTime(uniqueVectorRrd));
@@ -796,7 +750,6 @@ public class DualListBox1 extends JPanel {
 				System.out.println("longEndTime:" + longEndTime);
 				// get starttime
 				String stringStartTime = "";
-				// stringStartTime=pro.readP("graph.properties", "Startzeit");
 				stringStartTime = pro.readP(propertiePath, "Startzeit");
 				long longStartTime = dateCalc
 						.convertToTimestamp((stringStartTime));
@@ -865,7 +818,10 @@ public class DualListBox1 extends JPanel {
 					longEndTime);
 		}
 	}
-
+	/** checks if a config in form of a propertiefile already exist
+	 * 
+	 * @throws Exception
+	 */
 	protected void createInstance() throws Exception {
 		String propertiePath = "";
 		propertiePath = pro.readBaseGraph();
@@ -875,7 +831,7 @@ public class DualListBox1 extends JPanel {
 		/**
 		 * start the gui if permanent is choosen and properties exists
 		 */
-		// chec 'graph.properties' exists and btnPermanent is selected (only
+		// check if 'graph.properties' exists and btnPermanent is selected (only
 		// 'Congipath0')
 		if ((file.exists() == true)
 				&& (pro.readP(pro.readBaseGraph(), "Permanent").equals("ja"))) {

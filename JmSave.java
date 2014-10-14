@@ -1,12 +1,10 @@
 package org.rrd4j.jl;
 
 import java.awt.Color;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.*;
-
 
 import javax.swing.colorchooser.ColorSelectionModel;
 
@@ -409,31 +407,36 @@ public class JmSave {
 	 * @throws Exception
 	 */
 	protected void updateRrd(String pathFile, String csvPath,
-			String csvSplitter, long startTime, long endTime) throws Exception {
-		Logging log = new Logging();
-		String uCommand="";
+			String csvSplitter, long startTime, long endTime, Logging l) throws Exception {
+		Logging log = l;
 		// Update DB
 		// Create DB and add Data
 		// ---------------------------------------------------------------------------------------------------------------------------------------------------
 		RrdDb rrdDb = new RrdDb(pathFile);
 		ReadCsv rc = new ReadCsv();
+		Logging dbData = new Logging();
+		dbData.logFile("rrd4j.data.log");
+
 
 		// Create new File, it's necessary to delete file
 		File csvFile = new File(csvPath);
 
 		// Create new Sample
 		Sample sample = rrdDb.createSample();
+		String updateCommand=("rrdtool update: " + pathFile +" " + "data");
+		log.logger.info(updateCommand);		
 		// System.out.println("Zeilen: " + rc.countL(csvFile));
 		for (int i = 0; i < rc.countL(csvFile); i++) {
 			sample.setAndUpdate(rc.readCSV(csvFile, csvSplitter, i,
 					rc.countL((csvFile))));
-			uCommand=("rrdtool update: "
+			String uCommand=("rrdtool update: "
 					+ pathFile
 					+ " "
 					+ rc.readCSV(csvFile, csvSplitter, i,
 							rc.countL((csvFile))));
 			System.out
 					.println(uCommand);
+			log.logger.info(uCommand);
 		}
 		// show Data in DB
 		FetchRequest fetchRequest = rrdDb.createFetchRequest(ConsolFun.AVERAGE,
@@ -442,11 +445,10 @@ public class JmSave {
 				+ startTime + " --end " + endTime);
 		System.out.println("Starttime: " + startTime);
 		FetchData fetchData = fetchRequest.fetchData();
-		log.logFile("rrd4j.log");
-		 log.logger.info(fetchRequest.dump());
-		 log.logger.info(uCommand);
-		System.out.println(fetchData.dump());
-		System.out.println(rrdDb.dump());
+//		log.logFile("arrd4j.log");
+		 dbData.logger.info(fetchData.dump());
+//		System.out.println(fetchData.dump());
+//		System.out.println(rrdDb.dump());
 		 rrdDb.close();
 //		 Delete CSV-File
 		 csvFile.delete();
@@ -632,7 +634,9 @@ public class JmSave {
 		}
 	}
 
-	// atore different colors into an arrayList
+	/** 
+	 * define and store different colors into an arrayList (used in createGraphes 
+	 */
 	protected void setColors()
 	{
 		Color cBlack = new Color(0,0,0);
@@ -664,7 +668,11 @@ public class JmSave {
 		colors.add(cNavy);	
 	}
 	
-	// give back the color of appendant index
+    /**
+     *  give back the color of appendant index
+     * @param int i
+     * @return color
+     */
 	protected Color getColor(int i)
 	{
 

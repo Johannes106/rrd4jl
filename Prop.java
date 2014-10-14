@@ -19,6 +19,11 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+/**
+ * It is responsible for managing the useage of propertiefiles
+ * @author j.launer
+ *
+ */
 public class Prop {
 	/**
 	 * @param args
@@ -120,7 +125,7 @@ public class Prop {
 	
 	/**
 	 * readBase reads configpfad of the basepropertie
-	 * @return
+	 * @return String configPath
 	 */
 	protected String readBase()
 	{
@@ -227,7 +232,7 @@ public class Prop {
 //	}
 	
 	/**
-	 * createGraphProp generates the base of a propertie-file of graph
+	 * createGraphProp generates the base of a propertie-file of graph (graph.properties)
 	 * @param pathGraphProp
 	 */
 	protected void createBaseGraph(String pathGraphProp) 
@@ -358,7 +363,10 @@ public class Prop {
 		}
 		return pfadConfig;
 	}
-	
+	/** determines the count of elements in graph.properties
+	 * 
+	 * @return int counterPathes
+	 */
 	protected int readElementGraphProp()
 	{
 		int anzahlConfigpfad=0;

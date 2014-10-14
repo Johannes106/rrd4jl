@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
  
+/**
+ * it is reponsible for all actions with a csv-File
+ * @author j.launer
+ *
+ */
 public class ReadCsv {
 	
 	public int countL(File csvFile) {
@@ -116,9 +121,10 @@ public class ReadCsv {
 			     arrLong0 = arrLong0/1000; 
 			     arrLong = arrLong0 + heartbeat/2;
 			  }
+			  br.close();
 		  } catch (Exception e) {
 				e.printStackTrace();
-				System.err.println("ReadCSV: Fehler beim Ermitteln der letzen Zeit");
+				System.err.println("ReadCSV: Fehler beim Ermitteln der letzten Zeit");
 			}
 				System.out.println("LongLastTime: " + arrLong);
 			  return arrLong;
